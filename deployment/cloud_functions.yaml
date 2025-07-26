@@ -1,0 +1,147 @@
+# Cloud Functions Deployment Configuration for Project Raseed
+
+functions:
+  - name: "receipt-processor"
+    runtime: "go121"
+    region: "us-central1"
+    entryPoint: "ProcessReceipt"
+    source: "./functions/receipt_processor"
+    trigger:
+      type: "pubsub"
+      topic: "receipt-processing"
+    environmentVariables:
+      GOOGLE_CLOUD_PROJECT: "PROJECT_ID"
+      VERTEX_AI_LOCATION: "us-central1"
+    memory: "2GB"
+    timeout: "540s"
+    maxInstances: 100
+    labels:
+      project: "raseed"
+      component: "receipt-processor"
+    
+  - name: "query-processor"
+    runtime: "go121"
+    region: "us-central1"
+    entryPoint: "ProcessQuery"
+    source: "./functions/query_processor"
+    trigger:
+      type: "pubsub"
+      topic: "query-processing"
+    environmentVariables:
+      GOOGLE_CLOUD_PROJECT: "PROJECT_ID"
+      VERTEX_AI_LOCATION: "us-central1"
+    memory: "1GB"
+    timeout: "540s"
+    maxInstances: 50
+    labels:
+      project: "raseed"
+      component: "query-processor"
+    
+  - name: "third-party-integration"
+    runtime: "go121"
+    region: "us-central1"
+    entryPoint: "ProcessThirdPartyIntegration"
+    source: "./functions/third_party_integration"
+    trigger:
+      type: "pubsub"
+      topic: "third-party-integration"
+    environmentVariables:
+      GOOGLE_CLOUD_PROJECT: "PROJECT_ID"
+    memory: "512MB"
+    timeout: "300s"
+    maxInstances: 20
+    labels:
+      project: "raseed"
+      component: "third-party-integration"
+    
+  - name: "spending-analyzer"
+    runtime: "go121"
+    region: "us-central1"
+    entryPoint: "ProcessSpendingAnalysis"
+    source: "./functions/spending_analyzer"
+    trigger:
+      type: "pubsub"
+      topic: "spending-analysis"
+    environmentVariables:
+      GOOGLE_CLOUD_PROJECT: "PROJECT_ID"
+      VERTEX_AI_LOCATION: "us-central1"
+    memory: "1GB"
+    timeout: "300s"
+    maxInstances: 10
+    labels:
+      project: "raseed"
+      component: "spending-analyzer"
+    
+  - name: "stock-manager"
+    runtime: "go121"
+    region: "us-central1"
+    entryPoint: "ProcessStockManagement"
+    source: "./functions/stock_manager"
+    trigger:
+      type: "pubsub"
+      topic: "stock-management"
+    environmentVariables:
+      GOOGLE_CLOUD_PROJECT: "PROJECT_ID"
+    memory: "512MB"
+    timeout: "300s"
+    maxInstances: 10
+    labels:
+      project: "raseed"
+      component: "stock-manager"
+    
+  - name: "notification-processor"
+    runtime: "go121"
+    region: "us-central1"
+    entryPoint: "ProcessNotification"
+    source: "./functions/notification_processor"
+    trigger:
+      type: "pubsub"
+      topic: "notification-events"
+    environmentVariables:
+      GOOGLE_CLOUD_PROJECT: "PROJECT_ID"
+    memory: "512MB"
+    timeout: "300s"
+    maxInstances: 20
+    labels:
+      project: "raseed"
+      component: "notification-processor"
+
+# IAM roles and permissions
+iam:
+  - role: "roles/aiplatform.user"
+    members:
+      - "serviceAccount:raseed-backend@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:receipt-processor@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:query-processor@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:spending-analyzer@PROJECT_ID.iam.gserviceaccount.com"
+  
+  - role: "roles/datastore.user"
+    members:
+      - "serviceAccount:raseed-backend@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:receipt-processor@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:query-processor@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:third-party-integration@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:spending-analyzer@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:stock-manager@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:notification-processor@PROJECT_ID.iam.gserviceaccount.com"
+  
+  - role: "roles/pubsub.publisher"
+    members:
+      - "serviceAccount:raseed-backend@PROJECT_ID.iam.gserviceaccount.com"
+  
+  - role: "roles/pubsub.subscriber"
+    members:
+      - "serviceAccount:receipt-processor@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:query-processor@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:third-party-integration@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:spending-analyzer@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:stock-manager@PROJECT_ID.iam.gserviceaccount.com"
+      - "serviceAccount:notification-processor@PROJECT_ID.iam.gserviceaccount.com"
+  
+  - role: "roles/storage.objectViewer"
+    members:
+      - "serviceAccount:receipt-processor@PROJECT_ID.iam.gserviceaccount.com"
+  
+  - role: "roles/storage.objectCreator"
+    members:
+      - "serviceAccount:raseed-backend@PROJECT_ID.iam.gserviceaccount.com" 

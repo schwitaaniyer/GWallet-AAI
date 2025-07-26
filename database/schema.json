@@ -1,0 +1,371 @@
+{
+  "collections": {
+    "users": {
+      "description": "User profiles and preferences",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique user identifier"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address"
+        },
+        "name": {
+          "type": "string",
+          "description": "User's display name"
+        },
+        "preferences": {
+          "type": "map",
+          "description": "User preferences for notifications, language, etc."
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Account creation timestamp"
+        },
+        "updated_at": {
+          "type": "timestamp",
+          "description": "Last update timestamp"
+        }
+      }
+    },
+    "receipts": {
+      "description": "Receipt documents with extracted data",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique receipt identifier"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User who owns this receipt"
+        },
+        "store_name": {
+          "type": "string",
+          "description": "Name of the store"
+        },
+        "total_amount": {
+          "type": "number",
+          "description": "Total amount on receipt"
+        },
+        "tax_amount": {
+          "type": "number",
+          "description": "Tax amount"
+        },
+        "items": {
+          "type": "array",
+          "description": "Array of items on the receipt",
+          "items": {
+            "type": "map",
+            "fields": {
+              "name": {"type": "string"},
+              "price": {"type": "number"},
+              "quantity": {"type": "integer"},
+              "category": {"type": "string"}
+            }
+          }
+        },
+        "date": {
+          "type": "timestamp",
+          "description": "Receipt date"
+        },
+        "image_url": {
+          "type": "string",
+          "description": "URL to receipt image in Cloud Storage"
+        },
+        "location": {
+          "type": "map",
+          "description": "Store location information",
+          "fields": {
+            "latitude": {"type": "number"},
+            "longitude": {"type": "number"},
+            "address": {"type": "string"}
+          }
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Document creation timestamp"
+        },
+        "updated_at": {
+          "type": "timestamp",
+          "description": "Last update timestamp"
+        }
+      }
+    },
+    "queries": {
+      "description": "User queries and AI responses",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique query identifier"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User who made the query"
+        },
+        "query": {
+          "type": "string",
+          "description": "User's natural language query"
+        },
+        "language": {
+          "type": "string",
+          "description": "Language of the query"
+        },
+        "response": {
+          "type": "string",
+          "description": "AI-generated response"
+        },
+        "intent": {
+          "type": "string",
+          "description": "Detected intent of the query"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence score of the response"
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Query creation timestamp"
+        },
+        "updated_at": {
+          "type": "timestamp",
+          "description": "Last update timestamp"
+        }
+      }
+    },
+    "wallet_passes": {
+      "description": "Google Wallet passes created by the system",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique pass identifier"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User who owns this pass"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of pass (receipt, shopping_list, insight, etc.)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Pass title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Pass description"
+        },
+        "data": {
+          "type": "string",
+          "description": "JSON string containing pass data"
+        },
+        "google_wallet_id": {
+          "type": "string",
+          "description": "Google Wallet pass ID"
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Pass creation timestamp"
+        }
+      }
+    },
+    "third_party_bills": {
+      "description": "Bills from third-party services like Zomato, Blinkit",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique bill identifier"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User who owns this bill"
+        },
+        "service": {
+          "type": "string",
+          "description": "Third-party service name (zomato, blinkit, etc.)"
+        },
+        "order_id": {
+          "type": "string",
+          "description": "Order ID from the service"
+        },
+        "restaurant": {
+          "type": "string",
+          "description": "Restaurant or store name"
+        },
+        "total_amount": {
+          "type": "number",
+          "description": "Total bill amount"
+        },
+        "items": {
+          "type": "array",
+          "description": "Array of items in the bill",
+          "items": {
+            "type": "map",
+            "fields": {
+              "name": {"type": "string"},
+              "price": {"type": "number"},
+              "quantity": {"type": "integer"},
+              "category": {"type": "string"}
+            }
+          }
+        },
+        "order_date": {
+          "type": "timestamp",
+          "description": "Order date"
+        },
+        "status": {
+          "type": "string",
+          "description": "Order status (pending, delivered, etc.)"
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Document creation timestamp"
+        }
+      }
+    },
+    "spending_analytics": {
+      "description": "User spending analytics and insights",
+      "fields": {
+        "user_id": {
+          "type": "string",
+          "description": "User identifier"
+        },
+        "period": {
+          "type": "string",
+          "description": "Analytics period (week, month, quarter, year)"
+        },
+        "total_spent": {
+          "type": "number",
+          "description": "Total amount spent in the period"
+        },
+        "category_breakdown": {
+          "type": "map",
+          "description": "Spending breakdown by category"
+        },
+        "insights": {
+          "type": "array",
+          "description": "AI-generated insights",
+          "items": {"type": "string"}
+        },
+        "recommendations": {
+          "type": "array",
+          "description": "AI-generated recommendations",
+          "items": {"type": "string"}
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Analytics creation timestamp"
+        }
+      }
+    },
+    "stock_items": {
+      "description": "Stock management for perishable items",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique item identifier"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "User who owns this item"
+        },
+        "name": {
+          "type": "string",
+          "description": "Item name"
+        },
+        "category": {
+          "type": "string",
+          "description": "Item category (dairy, produce, etc.)"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Current quantity"
+        },
+        "unit": {
+          "type": "string",
+          "description": "Unit of measurement"
+        },
+        "purchase_date": {
+          "type": "timestamp",
+          "description": "Date when item was purchased"
+        },
+        "expiry_date": {
+          "type": "timestamp",
+          "description": "Item expiry date"
+        },
+        "status": {
+          "type": "string",
+          "description": "Item status (fresh, expiring_soon, expired)"
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Document creation timestamp"
+        },
+        "updated_at": {
+          "type": "timestamp",
+          "description": "Last update timestamp"
+        }
+      }
+    },
+    "system_config": {
+      "description": "System configuration and settings",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Configuration identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Configuration name"
+        },
+        "value": {
+          "type": "map",
+          "description": "Configuration value"
+        },
+        "description": {
+          "type": "string",
+          "description": "Configuration description"
+        },
+        "created_at": {
+          "type": "timestamp",
+          "description": "Configuration creation timestamp"
+        },
+        "updated_at": {
+          "type": "timestamp",
+          "description": "Last update timestamp"
+        }
+      }
+    }
+  },
+  "indexes": [
+    {
+      "collection": "receipts",
+      "fields": ["user_id", "date"]
+    },
+    {
+      "collection": "receipts",
+      "fields": ["user_id", "store_name"]
+    },
+    {
+      "collection": "queries",
+      "fields": ["user_id", "created_at"]
+    },
+    {
+      "collection": "wallet_passes",
+      "fields": ["user_id", "type"]
+    },
+    {
+      "collection": "third_party_bills",
+      "fields": ["user_id", "service"]
+    },
+    {
+      "collection": "stock_items",
+      "fields": ["user_id", "expiry_date"]
+    },
+    {
+      "collection": "stock_items",
+      "fields": ["user_id", "status"]
+    }
+  ]
+} 

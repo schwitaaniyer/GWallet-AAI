@@ -1,0 +1,247 @@
+# Pub/Sub Topics and Subscriptions Configuration for Project Raseed
+
+topics:
+  - name: "receipt-processing"
+    description: "Topic for receipt processing events"
+    messageRetentionDuration: "7d"
+    labels:
+      project: "raseed"
+      component: "receipt-processing"
+    
+  - name: "query-processing"
+    description: "Topic for user query processing events"
+    messageRetentionDuration: "7d"
+    labels:
+      project: "raseed"
+      component: "query-processing"
+    
+  - name: "wallet-pass-creation"
+    description: "Topic for Google Wallet pass creation events"
+    messageRetentionDuration: "7d"
+    labels:
+      project: "raseed"
+      component: "wallet-integration"
+    
+  - name: "third-party-integration"
+    description: "Topic for third-party service integration events"
+    messageRetentionDuration: "7d"
+    labels:
+      project: "raseed"
+      component: "third-party-integration"
+    
+  - name: "spending-analysis"
+    description: "Topic for spending analysis and insights generation"
+    messageRetentionDuration: "7d"
+    labels:
+      project: "raseed"
+      component: "analytics"
+    
+  - name: "stock-management"
+    description: "Topic for stock management and expiry notifications"
+    messageRetentionDuration: "7d"
+    labels:
+      project: "raseed"
+      component: "stock-management"
+    
+  - name: "notification-events"
+    description: "Topic for user notification events"
+    messageRetentionDuration: "7d"
+    labels:
+      project: "raseed"
+      component: "notifications"
+
+subscriptions:
+  - name: "receipt-processor-sub"
+    topic: "receipt-processing"
+    description: "Subscription for receipt processing Cloud Function"
+    ackDeadlineSeconds: 60
+    messageRetentionDuration: "7d"
+    expirationPolicy:
+      ttl: "31d"
+    labels:
+      project: "raseed"
+      component: "receipt-processor"
+    
+  - name: "query-processor-sub"
+    topic: "query-processing"
+    description: "Subscription for query processing Cloud Function"
+    ackDeadlineSeconds: 60
+    messageRetentionDuration: "7d"
+    expirationPolicy:
+      ttl: "31d"
+    labels:
+      project: "raseed"
+      component: "query-processor"
+    
+  - name: "wallet-pass-creator-sub"
+    topic: "wallet-pass-creation"
+    description: "Subscription for Google Wallet pass creation"
+    ackDeadlineSeconds: 60
+    messageRetentionDuration: "7d"
+    expirationPolicy:
+      ttl: "31d"
+    labels:
+      project: "raseed"
+      component: "wallet-pass-creator"
+    
+  - name: "third-party-integration-sub"
+    topic: "third-party-integration"
+    description: "Subscription for third-party integration processing"
+    ackDeadlineSeconds: 60
+    messageRetentionDuration: "7d"
+    expirationPolicy:
+      ttl: "31d"
+    labels:
+      project: "raseed"
+      component: "third-party-integration"
+    
+  - name: "spending-analyzer-sub"
+    topic: "spending-analysis"
+    description: "Subscription for spending analysis processing"
+    ackDeadlineSeconds: 60
+    messageRetentionDuration: "7d"
+    expirationPolicy:
+      ttl: "31d"
+    labels:
+      project: "raseed"
+      component: "spending-analyzer"
+    
+  - name: "stock-manager-sub"
+    topic: "stock-management"
+    description: "Subscription for stock management processing"
+    ackDeadlineSeconds: 60
+    messageRetentionDuration: "7d"
+    expirationPolicy:
+      ttl: "31d"
+    labels:
+      project: "raseed"
+      component: "stock-manager"
+    
+  - name: "notification-processor-sub"
+    topic: "notification-events"
+    description: "Subscription for notification processing"
+    ackDeadlineSeconds: 60
+    messageRetentionDuration: "7d"
+    expirationPolicy:
+      ttl: "31d"
+    labels:
+      project: "raseed"
+      component: "notification-processor"
+
+# Message schemas for each topic
+schemas:
+  receipt-processing:
+    type: "object"
+    properties:
+      receipt_id:
+        type: "string"
+        description: "Unique receipt identifier"
+      user_id:
+        type: "string"
+        description: "User identifier"
+      image_url:
+        type: "string"
+        description: "URL of the receipt image"
+    required: ["receipt_id", "user_id", "image_url"]
+    
+  query-processing:
+    type: "object"
+    properties:
+      query_id:
+        type: "string"
+        description: "Unique query identifier"
+      user_id:
+        type: "string"
+        description: "User identifier"
+      query:
+        type: "string"
+        description: "User's natural language query"
+      language:
+        type: "string"
+        description: "Language of the query"
+    required: ["query_id", "user_id", "query"]
+    
+  wallet-pass-creation:
+    type: "object"
+    properties:
+      pass_id:
+        type: "string"
+        description: "Unique pass identifier"
+      user_id:
+        type: "string"
+        description: "User identifier"
+      type:
+        type: "string"
+        description: "Type of pass"
+      title:
+        type: "string"
+        description: "Pass title"
+    required: ["pass_id", "user_id", "type", "title"]
+    
+  third-party-integration:
+    type: "object"
+    properties:
+      user_id:
+        type: "string"
+        description: "User identifier"
+      service:
+        type: "string"
+        description: "Third-party service name"
+      action:
+        type: "string"
+        description: "Action to perform"
+      service_data:
+        type: "string"
+        description: "Service-specific data"
+      requested_at:
+        type: "string"
+        description: "Request timestamp"
+    required: ["user_id", "service", "action"]
+    
+  spending-analysis:
+    type: "object"
+    properties:
+      user_id:
+        type: "string"
+        description: "User identifier"
+      period:
+        type: "string"
+        description: "Analysis period"
+      trigger:
+        type: "string"
+        description: "What triggered the analysis"
+    required: ["user_id", "period"]
+    
+  stock-management:
+    type: "object"
+    properties:
+      user_id:
+        type: "string"
+        description: "User identifier"
+      action:
+        type: "string"
+        description: "Action to perform"
+      item_data:
+        type: "object"
+        description: "Item data"
+    required: ["user_id", "action"]
+    
+  notification-events:
+    type: "object"
+    properties:
+      user_id:
+        type: "string"
+        description: "User identifier"
+      type:
+        type: "string"
+        description: "Notification type"
+      title:
+        type: "string"
+        description: "Notification title"
+      message:
+        type: "string"
+        description: "Notification message"
+      data:
+        type: "object"
+        description: "Additional notification data"
+    required: ["user_id", "type", "title", "message"] 

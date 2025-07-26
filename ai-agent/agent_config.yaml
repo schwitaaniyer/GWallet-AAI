@@ -1,0 +1,219 @@
+apiVersion: aiplatform.googleapis.com/v1
+kind: Agent
+metadata:
+  name: raseed-agent
+  displayName: "Raseed - AI Financial Assistant"
+  description: "AI-powered personal assistant for receipt management and financial planning"
+spec:
+  displayName: "Raseed - AI Financial Assistant"
+  description: "An intelligent assistant that helps users manage receipts, analyze spending patterns, and provide financial insights"
+  
+  # Agent capabilities
+  capabilities:
+    - name: "receipt_analysis"
+      description: "Analyze receipt images to extract items, prices, and store information"
+      inputSchema:
+        type: object
+        properties:
+          image_url:
+            type: string
+            description: "URL of the receipt image"
+          user_id:
+            type: string
+            description: "User identifier"
+        required: ["image_url", "user_id"]
+      outputSchema:
+        type: object
+        properties:
+          store_name:
+            type: string
+            description: "Name of the store"
+          total_amount:
+            type: number
+            description: "Total amount on receipt"
+          tax_amount:
+            type: number
+            description: "Tax amount"
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+                quantity:
+                  type: integer
+                category:
+                  type: string
+          date:
+            type: string
+            format: date
+    
+    - name: "financial_query_processing"
+      description: "Process natural language queries about finances and spending"
+      inputSchema:
+        type: object
+        properties:
+          query:
+            type: string
+            description: "User's natural language query"
+          user_id:
+            type: string
+            description: "User identifier"
+          language:
+            type: string
+            description: "Language of the query"
+        required: ["query", "user_id"]
+      outputSchema:
+        type: object
+        properties:
+          response:
+            type: string
+            description: "AI-generated response"
+          intent:
+            type: string
+            enum: ["cooking_suggestion", "spending_analysis", "shopping_list", "financial_insight", "general_help"]
+          confidence:
+            type: number
+            minimum: 0
+            maximum: 1
+          suggestions:
+            type: array
+            items:
+              type: string
+          data:
+            type: object
+            additionalProperties: true
+    
+    - name: "spending_analysis"
+      description: "Analyze user's spending patterns and provide insights"
+      inputSchema:
+        type: object
+        properties:
+          user_id:
+            type: string
+            description: "User identifier"
+          time_period:
+            type: string
+            enum: ["week", "month", "quarter", "year"]
+            default: "month"
+        required: ["user_id"]
+      outputSchema:
+        type: object
+        properties:
+          total_spent:
+            type: number
+          category_breakdown:
+            type: object
+            additionalProperties:
+              type: number
+          insights:
+            type: array
+            items:
+              type: string
+          recommendations:
+            type: array
+            items:
+              type: string
+    
+    - name: "shopping_list_generation"
+      description: "Generate shopping lists based on user's needs and preferences"
+      inputSchema:
+        type: object
+        properties:
+          user_id:
+            type: string
+            description: "User identifier"
+          context:
+            type: string
+            description: "Context for shopping list (e.g., 'weekly groceries', 'party supplies')"
+        required: ["user_id"]
+      outputSchema:
+        type: object
+        properties:
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                estimated_price:
+                  type: number
+                priority:
+                  type: string
+                  enum: ["high", "medium", "low"]
+          total_estimated_cost:
+            type: number
+          suggestions:
+            type: array
+            items:
+              type: string
+
+  # Model configuration
+  model:
+    name: "gemini-pro"
+    version: "latest"
+    location: "us-central1"
+    
+  # Prompt engineering
+  systemPrompt: |
+    You are Raseed, an AI-powered personal assistant for financial management and receipt analysis. 
+    Your primary goals are:
+    
+    1. Help users understand their spending patterns
+    2. Provide actionable financial insights
+    3. Assist with receipt management and organization
+    4. Generate helpful shopping lists and cooking suggestions
+    5. Support multiple languages and cultural contexts
+    
+    Always be helpful, accurate, and respectful of user privacy. Provide specific, actionable advice
+    based on the user's financial data and preferences.
+    
+  # Knowledge base configuration
+  knowledgeBase:
+    - name: "financial_terms"
+      description: "Financial terminology and concepts"
+      source: "structured_data"
+      
+    - name: "receipt_patterns"
+      description: "Common receipt formats and patterns"
+      source: "structured_data"
+      
+    - name: "spending_categories"
+      description: "Standard spending categories and classifications"
+      source: "structured_data"
+
+  # Integration settings
+  integrations:
+    - name: "firestore"
+      type: "database"
+      description: "Firestore database for storing user data"
+      
+    - name: "cloud_storage"
+      type: "storage"
+      description: "Cloud Storage for receipt images"
+      
+    - name: "pubsub"
+      type: "messaging"
+      description: "Pub/Sub for event-driven processing"
+      
+    - name: "google_wallet"
+      type: "api"
+      description: "Google Wallet API for pass creation"
+
+  # Security and privacy
+  security:
+    dataRetention: "30_days"
+    encryption: "at_rest_and_in_transit"
+    accessControl: "user_based"
+    
+  # Performance settings
+  performance:
+    maxConcurrentRequests: 100
+    timeoutSeconds: 30
+    retryAttempts: 3 
