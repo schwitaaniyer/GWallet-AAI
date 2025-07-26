@@ -21,7 +21,8 @@ tests/
 ├── e2e_test.go            # End-to-end tests
 ├── cli_test.go            # CLI-specific tests
 ├── test_config.yaml       # Test configuration
-├── run_tests.sh           # Test runner script
+├── run_tests.sh           # Test runner script (Linux/macOS)
+├── run_tests.bat          # Test runner script (Windows)
 └── README.md              # This file
 ```
 
@@ -116,9 +117,13 @@ Performance tests measure system behavior under various load conditions.
 
 ### Using the Test Runner Script
 
-The `run_tests.sh` script provides a convenient way to run different types of tests:
+The test runner scripts provide a convenient way to run different types of tests:
 
+#### On Linux/macOS (Bash):
 ```bash
+# Make the script executable (first time only)
+chmod +x tests/run_tests.sh
+
 # Run all tests
 ./tests/run_tests.sh
 
@@ -130,6 +135,32 @@ The `run_tests.sh` script provides a convenient way to run different types of te
 
 # Run with options
 ./tests/run_tests.sh -c -r all  # Clean, run all tests, generate report
+```
+
+#### On Windows:
+```cmd
+# Using the Windows batch file
+tests\run_tests.bat
+
+# Run specific test types
+tests\run_tests.bat unit
+tests\run_tests.bat integration
+tests\run_tests.bat e2e
+tests\run_tests.bat performance
+
+# Run with options
+tests\run_tests.bat -c -r all  # Clean, run all tests, generate report
+```
+
+#### On Windows with Git Bash:
+```bash
+# Make the script executable (first time only)
+chmod +x tests/run_tests.sh
+
+# Run all tests
+./tests/run_tests.sh
+
+# Same options as Linux/macOS
 ```
 
 ### Manual Test Execution
