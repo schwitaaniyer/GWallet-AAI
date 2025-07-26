@@ -239,6 +239,119 @@ Get spending analysis for a user.
 
 ---
 
+### Stock Management
+
+#### Create Stock Item
+**POST** `/stock-items`
+
+Create a new stock item for inventory management.
+
+**Content-Type:** `application/json`
+
+**Request Body:**
+```json
+{
+  "user_id": "user123",
+  "name": "Milk",
+  "category": "dairy",
+  "quantity": 2,
+  "unit": "liters",
+  "purchase_date": "2023-12-21T10:30:45Z",
+  "expiry_date": "2023-12-28T10:30:45Z"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "1703123456791",
+  "user_id": "user123",
+  "name": "Milk",
+  "category": "dairy",
+  "quantity": 2,
+  "unit": "liters",
+  "purchase_date": "2023-12-21T10:30:45Z",
+  "expiry_date": "2023-12-28T10:30:45Z",
+  "status": "fresh",
+  "created_at": "2023-12-21T10:30:45Z",
+  "updated_at": "2023-12-21T10:30:45Z"
+}
+```
+
+#### Get User Stock Items
+**GET** `/stock-items?user_id={user_id}&status={status}`
+
+Retrieve all stock items for a user.
+
+**Query Parameters:**
+- `user_id` (string, required): User identifier
+- `status` (string, optional): Filter by status (fresh, expiring_soon, expired)
+
+**Response:**
+```json
+[
+  {
+    "id": "1703123456791",
+    "user_id": "user123",
+    "name": "Milk",
+    "category": "dairy",
+    "quantity": 2,
+    "unit": "liters",
+    "purchase_date": "2023-12-21T10:30:45Z",
+    "expiry_date": "2023-12-28T10:30:45Z",
+    "status": "fresh",
+    "created_at": "2023-12-21T10:30:45Z",
+    "updated_at": "2023-12-21T10:30:45Z"
+  }
+]
+```
+
+#### Update Stock Item
+**PUT** `/stock-items?id={item_id}`
+
+Update an existing stock item.
+
+**Content-Type:** `application/json`
+
+**Request Body:**
+```json
+{
+  "name": "Milk",
+  "category": "category",
+  "quantity": 1,
+  "unit": "liters",
+  "expiry_date": "2023-12-25T10:30:45Z"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "1703123456791",
+  "user_id": "user123",
+  "name": "Milk",
+  "category": "dairy",
+  "quantity": 1,
+  "unit": "liters",
+  "purchase_date": "2023-12-21T10:30:45Z",
+  "expiry_date": "2023-12-25T10:30:45Z",
+  "status": "expiring_soon",
+  "created_at": "2023-12-21T10:30:45Z",
+  "updated_at": "2023-12-21T11:30:45Z"
+}
+```
+
+#### Delete Stock Item
+**DELETE** `/stock-items?id={item_id}`
+
+Delete a stock item.
+
+**Response:**
+```
+204 No Content
+```
+
+---
 ## Error Responses
 
 All endpoints may return the following error responses:
@@ -321,6 +434,19 @@ The system publishes events to Pub/Sub topics that can be consumed by webhooks:
   "user_id": "user123",
   "type": "receipt",
   "title": "Receipt - Walmart"
+}
+```
+
+### Stock Management Events
+**Topic:** `stock-management`
+
+**Message Format:**
+```json
+{
+  "item_id": "1703123456791",
+  "user_id": "user123",
+  "action": "created",
+  "status": "fresh"
 }
 ```
 
