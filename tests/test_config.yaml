@@ -1,0 +1,295 @@
+# Test Configuration for GWallet-AAI
+# This file defines test environments, mock data, and test scenarios
+
+# Test Environments
+environments:
+  local:
+    backend_url: "http://localhost:8080"
+    cli_timeout: 30
+    web_timeout: 60
+    database: "test_firestore"
+    
+  staging:
+    backend_url: "https://staging-api.gwallet-ai.com"
+    cli_timeout: 60
+    web_timeout: 120
+    database: "staging_firestore"
+    
+  production:
+    backend_url: "https://api.gwallet-ai.com"
+    cli_timeout: 120
+    web_timeout: 180
+    database: "production_firestore"
+
+# Mock Data for Testing
+mock_data:
+  users:
+    - id: "test_user_123"
+      email: "test@example.com"
+      name: "Test User"
+      
+    - id: "e2e_user_123"
+      email: "e2e@example.com"
+      name: "E2E Test User"
+      
+    - id: "benchmark_user"
+      email: "benchmark@example.com"
+      name: "Benchmark User"
+
+  receipts:
+    - id: "test_receipt_123"
+      user_id: "test_user_123"
+      store_name: "Test Store"
+      total_amount: 45.99
+      tax_amount: 3.50
+      items:
+        - name: "Milk"
+          price: 4.99
+          quantity: 2
+          category: "dairy"
+        - name: "Bread"
+          price: 3.99
+          quantity: 1
+          category: "bakery"
+      date: "2024-01-15T10:30:00Z"
+      image_url: "https://storage.googleapis.com/test-bucket/receipts/test_receipt_123.jpg"
+      
+    - id: "e2e_receipt_123"
+      user_id: "e2e_user_123"
+      store_name: "E2E Test Store"
+      total_amount: 67.89
+      tax_amount: 5.23
+      items:
+        - name: "Bread"
+          price: 3.99
+          quantity: 2
+          category: "bakery"
+        - name: "Milk"
+          price: 4.99
+          quantity: 1
+          category: "dairy"
+        - name: "Eggs"
+          price: 5.99
+          quantity: 1
+          category: "dairy"
+      date: "2024-01-15T10:30:00Z"
+      image_url: "https://storage.googleapis.com/e2e-bucket/receipts/e2e_receipt_123.jpg"
+
+  queries:
+    - id: "test_query_123"
+      user_id: "test_user_123"
+      query: "What can I cook with my recent purchases?"
+      language: "en"
+      response: "Based on your recent purchases, you can make: 1. Scrambled eggs with toast 2. Pasta with tomato sauce"
+      created_at: "2024-01-15T10:30:00Z"
+      
+    - id: "e2e_query_123"
+      user_id: "e2e_user_123"
+      query: "What can I cook with bread, milk, and eggs?"
+      language: "en"
+      response: "With bread, milk, and eggs, you can make: 1. French Toast 2. Scrambled Eggs with Toast 3. Bread Pudding"
+      created_at: "2024-01-15T10:30:00Z"
+
+  wallet_passes:
+    - id: "test_pass_123"
+      user_id: "test_user_123"
+      type: "receipt"
+      title: "Receipt - Test Store"
+      description: "Total: $45.99, Items: 2"
+      data: '{"receipt_id": "test_receipt_123", "store_name": "Test Store"}'
+      created_at: "2024-01-15T10:30:00Z"
+      
+    - id: "e2e_pass_123"
+      user_id: "e2e_user_123"
+      type: "receipt"
+      title: "Receipt - E2E Test Store"
+      description: "Total: $67.89, Items: 3"
+      data: '{"receipt_id": "e2e_receipt_123", "store_name": "E2E Test Store"}'
+      created_at: "2024-01-15T10:30:00Z"
+
+# Test Scenarios
+test_scenarios:
+  cli_workflow:
+    name: "CLI Complete Workflow"
+    description: "Test complete CLI workflow from health check to analysis"
+    steps:
+      - name: "Health Check"
+        command: "health"
+        expected_status: 200
+        expected_output: "healthy"
+        
+      - name: "Upload Receipt"
+        command: "upload-receipt"
+        args: ["test_receipt.jpg"]
+        expected_status: 200
+        expected_output: "Test Store"
+        
+      - name: "Submit Query"
+        command: "query"
+        args: ["What can I cook?"]
+        expected_status: 200
+        expected_output: "pasta"
+        
+      - name: "List Receipts"
+        command: "list-receipts"
+        expected_status: 200
+        expected_output: "Test Store"
+        
+      - name: "Create Wallet Pass"
+        command: "create-pass"
+        args: ["receipt", "test_receipt_123"]
+        expected_status: 200
+        expected_output: "Test Receipt"
+        
+      - name: "Get Analysis"
+        command: "analysis"
+        expected_status: 200
+        expected_output: "245.67"
+
+  web_workflow:
+    name: "Web Interface Complete Workflow"
+    description: "Test complete web interface workflow"
+    steps:
+      - name: "Login"
+        screen: "login"
+        action: "authenticate"
+        credentials:
+          email: "test@example.com"
+          password: "password123"
+        expected_result: "home_screen"
+        
+      - name: "Upload Receipt"
+        screen: "receipts"
+        action: "upload_file"
+        file: "test_receipt.jpg"
+        expected_result: "receipt_processed"
+        
+      - name: "Ask AI Query"
+        screen: "home"
+        action: "submit_query"
+        query: "What can I cook?"
+        expected_result: "ai_response"
+        
+      - name: "View Wallet Passes"
+        screen: "passes"
+        action: "view_passes"
+        expected_result: "passes_displayed"
+        
+      - name: "View Analytics"
+        screen: "analysis"
+        action: "view_stats"
+        expected_result: "stats_displayed"
+
+  integration_workflow:
+    name: "CLI to Web Integration"
+    description: "Test data consistency between CLI and web interface"
+    steps:
+      - name: "CLI Upload"
+        component: "cli"
+        action: "upload_receipt"
+        file: "integration_receipt.jpg"
+        user_id: "integration_user"
+        
+      - name: "Web Verification"
+        component: "web"
+        action: "verify_receipt"
+        user_id: "integration_user"
+        expected_result: "receipt_found"
+        
+      - name: "CLI Query"
+        component: "cli"
+        action: "submit_query"
+        query: "What can I cook?"
+        user_id: "integration_user"
+        
+      - name: "Web Query Verification"
+        component: "web"
+        action: "verify_query"
+        user_id: "integration_user"
+        expected_result: "query_found"
+        
+      - name: "Data Consistency Check"
+        component: "both"
+        action: "verify_consistency"
+        user_id: "integration_user"
+        expected_result: "data_consistent"
+
+# Performance Test Configuration
+performance_tests:
+  receipt_upload:
+    concurrent_users: 10
+    duration_seconds: 60
+    ramp_up_seconds: 10
+    expected_throughput: 100
+    expected_latency_ms: 2000
+    
+  query_processing:
+    concurrent_users: 5
+    duration_seconds: 30
+    ramp_up_seconds: 5
+    expected_throughput: 50
+    expected_latency_ms: 5000
+    
+  web_interface:
+    concurrent_users: 20
+    duration_seconds: 120
+    ramp_up_seconds: 20
+    expected_throughput: 200
+    expected_latency_ms: 1000
+
+# Test Data Files
+test_files:
+  receipt_images:
+    - path: "test_data/receipts/small_receipt.jpg"
+      size_kb: 50
+      format: "JPEG"
+      
+    - path: "test_data/receipts/large_receipt.jpg"
+      size_kb: 500
+      format: "JPEG"
+      
+    - path: "test_data/receipts/invalid_receipt.txt"
+      size_kb: 10
+      format: "TEXT"
+      expected_error: "invalid_format"
+
+# Error Scenarios
+error_scenarios:
+  network_errors:
+    - name: "Connection Timeout"
+      condition: "network_timeout"
+      expected_behavior: "retry_with_backoff"
+      
+    - name: "Server Unavailable"
+      condition: "server_503"
+      expected_behavior: "show_error_message"
+      
+  validation_errors:
+    - name: "Invalid File Format"
+      condition: "invalid_file_type"
+      expected_behavior: "show_validation_error"
+      
+    - name: "Missing Required Fields"
+      condition: "missing_user_id"
+      expected_behavior: "show_validation_error"
+      
+  authentication_errors:
+    - name: "Invalid Credentials"
+      condition: "wrong_password"
+      expected_behavior: "show_auth_error"
+      
+    - name: "Expired Token"
+      condition: "expired_token"
+      expected_behavior: "redirect_to_login"
+
+# Test Reporting
+reporting:
+  output_format: "html"
+  output_directory: "test_reports"
+  include_screenshots: true
+  include_logs: true
+  metrics:
+    - "response_time"
+    - "throughput"
+    - "error_rate"
+    - "success_rate" 

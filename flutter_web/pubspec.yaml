@@ -1,0 +1,69 @@
+name: raseed_wallet
+description: A Flutter web interface for Project Raseed - AI-powered personal assistant integrated with Google Wallet
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # HTTP Client
+  http: ^1.1.0
+  
+  # UI Components
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.0
+  
+  # File Upload
+  file_picker: ^6.1.1
+  image_picker: ^1.0.4
+  
+  # Local Storage
+  shared_preferences: ^2.2.2
+  
+  # Date/Time
+  intl: ^0.18.1
+  
+  # Charts
+  fl_chart: ^0.65.0
+  
+  # Animations
+  lottie: ^2.7.0
+  
+  # QR Code
+  qr_flutter: ^4.1.0
+  
+  # Web Support
+  universal_html: ^2.2.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+  
+  fonts:
+    - family: GoogleSans
+      fonts:
+        - asset: assets/fonts/GoogleSans-Regular.ttf
+        - asset: assets/fonts/GoogleSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/GoogleSans-Bold.ttf
+          weight: 700 
